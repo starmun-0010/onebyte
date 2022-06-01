@@ -1,9 +1,10 @@
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using OneByte.Models;
 
 namespace OneByte.Data
 {
-    public class OneByteDbContext : DbContext
+    public class OneByteDbContext : IdentityDbContext 
     {
         public DbSet<Doctor> Doctors { get; set; }
         public DbSet<Patient> Patients { get; set; }
