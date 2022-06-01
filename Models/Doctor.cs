@@ -4,9 +4,8 @@ namespace OneByte.Models
 {
     public class Doctor 
     {
-        public int ID { get; set; }
-        public string Name { get; set; }
+        public string ID { get; set; }
         public string Contact { get; set; }
-        public List<Patient> Patients { get; set; }
+        public virtual ICollection<Patient> Patients { get; set; }
     }
 }
