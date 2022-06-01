@@ -13,8 +13,7 @@ namespace OneByte.Migrations
                 name: "Doctors",
                 columns: table => new
                 {
-                    ID = table.Column<string>(type: "text", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: true),
+                    ID = table.Column<Guid>(type: "uuid", nullable: false),
                     Contact = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
@@ -26,28 +25,46 @@ namespace OneByte.Migrations
                 name: "Patients",
                 columns: table => new
                 {
-                    ID = table.Column<string>(type: "text", nullable: false),
+                    ID = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: true),
-                    Contact = table.Column<string>(type: "text", nullable: true),
-                    DoctorID = table.Column<string>(type: "text", nullable: true)
+                    Contact = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Patients", x => x.ID);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DoctorPatient",
+                columns: table => new
+                {
+                    DoctorsID = table.Column<Guid>(type: "uuid", nullable: false),
+                    PatientsID = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DoctorPatient", x => new { x.DoctorsID, x.PatientsID });
                     table.ForeignKey(
-                        name: "FK_Patients_Doctors_DoctorID",
-                        column: x => x.DoctorID,
+                        name: "FK_DoctorPatient_Doctors_DoctorsID",
+                        column: x => x.DoctorsID,
                         principalTable: "Doctors",
-                        principalColumn: "ID");
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_DoctorPatient_Patients_PatientsID",
+                        column: x => x.PatientsID,
+                        principalTable: "Patients",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Visits",
                 columns: table => new
                 {
-                    ID = table.Column<string>(type: "text", nullable: false),
+                    ID = table.Column<Guid>(type: "uuid", nullable: false),
                     VisitDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    PatientId = table.Column<string>(type: "text", nullable: true)
+                    PatientId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -56,13 +73,14 @@ namespace OneByte.Migrations
                         name: "FK_Visits_Patients_PatientId",
                         column: x => x.PatientId,
                         principalTable: "Patients",
-                        principalColumn: "ID");
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Patients_DoctorID",
-                table: "Patients",
-                column: "DoctorID");
+                name: "IX_DoctorPatient_PatientsID",
+                table: "DoctorPatient",
+                column: "PatientsID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Visits_PatientId",
@@ -73,13 +91,16 @@ namespace OneByte.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "DoctorPatient");
+
+            migrationBuilder.DropTable(
                 name: "Visits");
 
             migrationBuilder.DropTable(
-                name: "Patients");
+                name: "Doctors");
 
             migrationBuilder.DropTable(
-                name: "Doctors");
+                name: "Patients");
         }
     }
 }

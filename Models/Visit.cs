@@ -7,10 +7,11 @@ namespace OneByte.Models
     public class Visit 
     {
         [Key]
-        public string ID { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public Guid ID { get; set; }
         public DateTime VisitDate { get; set; }
         [ForeignKey(nameof(Patient))]
-        public string PatientId {get; set; }
+        public Guid PatientId {get; set; }
         public Patient Patient {get; set;}
     }
 }

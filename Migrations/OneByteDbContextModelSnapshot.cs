@@ -24,11 +24,11 @@ namespace OneByte.Migrations
 
             modelBuilder.Entity("DoctorPatient", b =>
                 {
-                    b.Property<string>("DoctorsID")
-                        .HasColumnType("text");
+                    b.Property<Guid>("DoctorsID")
+                        .HasColumnType("uuid");
 
-                    b.Property<string>("PatientsID")
-                        .HasColumnType("text");
+                    b.Property<Guid>("PatientsID")
+                        .HasColumnType("uuid");
 
                     b.HasKey("DoctorsID", "PatientsID");
 
@@ -39,8 +39,9 @@ namespace OneByte.Migrations
 
             modelBuilder.Entity("OneByte.Models.Doctor", b =>
                 {
-                    b.Property<string>("ID")
-                        .HasColumnType("text");
+                    b.Property<Guid>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Contact")
                         .HasColumnType("text");
@@ -52,8 +53,9 @@ namespace OneByte.Migrations
 
             modelBuilder.Entity("OneByte.Models.Patient", b =>
                 {
-                    b.Property<string>("ID")
-                        .HasColumnType("text");
+                    b.Property<Guid>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Contact")
                         .HasColumnType("text");
@@ -68,11 +70,12 @@ namespace OneByte.Migrations
 
             modelBuilder.Entity("OneByte.Models.Visit", b =>
                 {
-                    b.Property<string>("ID")
-                        .HasColumnType("text");
+                    b.Property<Guid>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
 
-                    b.Property<string>("PatientId")
-                        .HasColumnType("text");
+                    b.Property<Guid>("PatientId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("VisitDate")
                         .HasColumnType("timestamp with time zone");
@@ -103,7 +106,9 @@ namespace OneByte.Migrations
                 {
                     b.HasOne("OneByte.Models.Patient", "Patient")
                         .WithMany("Visits")
-                        .HasForeignKey("PatientId");
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Patient");
                 });
