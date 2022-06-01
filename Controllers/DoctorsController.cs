@@ -9,47 +9,47 @@ namespace OneByte.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class PatientsController : Controller
+    public class DoctorsController : Controller
     {
         private OneByteDbContext _context;
-        public PatientsController(OneByteDbContext context)
+        public DoctorsController(OneByteDbContext context)
         {
             _context = context;
         }
-
+        
         [HttpGet]
         [Route("{id}")]
         public async Task<IActionResult> Get(Guid id)
         {
-            return Ok(await _context.Patients.FindAsync(id));
+            return Ok(await _context.Doctors.FindAsync(id));
         }
 
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            return Ok(await _context.Patients.ToListAsync());
+            return Ok(await _context.Doctors.ToListAsync());
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(Patient patient)
+        public async Task<IActionResult> Post(Doctor doctor)
         {
-            _context.Patients.Add(patient);
+            _context.Doctors.Add(doctor);
             await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(Get), new { id = patient.ID }, patient);
+            return CreatedAtAction(nameof(Get), new { id = doctor.ID }, doctor);
         }
 
         [HttpPut]
-        public async Task<IActionResult> Put(Patient patient)
+        public async Task<IActionResult> Put(Doctor doctor)
         {
-            _context.Patients.Update(patient);
+            _context.Doctors.Update(doctor);
             await _context.SaveChangesAsync();
-            return Ok(await _context.Patients.FindAsync(patient.ID));
+            return Ok(await _context.Doctors.FindAsync(doctor.ID));
         }
-        
+
         [HttpDelete]
         public async Task<IActionResult> Delete(Guid id)
         {
-            _context.Patients.Remove(await _context.Patients.FindAsync(id));
+            _context.Doctors.Remove(await _context.Doctors.FindAsync(id));
             await _context.SaveChangesAsync();
             return NoContent();
         }
