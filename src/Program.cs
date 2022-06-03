@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using OneByte.Data;
+using OneByte.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,10 +41,10 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 if(app.Environment.IsDevelopment())
 {
-    app.UseDeveloperExceptionPage();
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
