@@ -6,8 +6,15 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using OneByte.Data;
 using OneByte.Middlewares;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Host.UseSerilog((context, configuration)=>{
+     configuration.MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Information)
+    .Enrich.FromLogContext()
+    .Enrich.WithMachineName()
+    .WriteTo.Console();
+});
 
 builder.Services.AddDbContext<OneByteDbContext>();
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(options=>{
