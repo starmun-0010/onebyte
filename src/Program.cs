@@ -12,6 +12,7 @@ using Serilog;
 using Serilog.Sinks.Elasticsearch;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 builder.Host.UseSerilog((context, configuration)=>{
     configuration.MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Information)
