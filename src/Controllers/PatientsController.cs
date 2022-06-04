@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +18,7 @@ namespace OneByte.Controllers
     [Route("api/[controller]")]
     public class PatientsController : OneByteControllerBase
     {
-        public PatientsController(OneByteDbContext context) : base(context)
+        public PatientsController(OneByteDbContext context, IMapper mapper) : base(context, mapper)
         {
         }
 
