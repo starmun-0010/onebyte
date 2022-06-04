@@ -1,3 +1,5 @@
+using System;
+using System.Reflection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
@@ -7,17 +9,32 @@ using Microsoft.IdentityModel.Tokens;
 using OneByte.Data;
 using OneByte.Middlewares;
 using Serilog;
+using Serilog.Sinks.Elasticsearch;
 
 var builder = WebApplication.CreateBuilder(args);
+var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 builder.Host.UseSerilog((context, configuration)=>{
-     configuration.MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Information)
+    configuration.MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Information)
     .Enrich.FromLogContext()
     .Enrich.WithMachineName()
-    .WriteTo.Console();
+    .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri("http://172.18.0.2:9200"))
+    {
+        AutoRegisterTemplate = true,
+        IndexFormat = $"{Assembly.GetExecutingAssembly().GetName().Name.ToLower().Replace(".", "-")}-{environment?.ToLower().Replace(".", "-")}-{DateTime.UtcNow:yyyy-MM}",
+        NumberOfReplicas = 1,
+        EmitEventFailure = EmitEventFailureHandling.WriteToSelfLog,
+        NumberOfShards = 2,
+        AutoRegisterTemplateVersion = AutoRegisterTemplateVersion.ESv7,
+        TypeName = null,
+        DetectElasticsearchVersion = true,
+        RegisterTemplateFailure = RegisterTemplateRecovery.IndexAnyway  
+    })
+    .WriteTo.Console(); 
 });
 
 builder.Services.AddDbContext<OneByteDbContext>();
-builder.Services.AddIdentity<IdentityUser, IdentityRole>(options=>{
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+{
     options.Password.RequireDigit = false;
     options.Password.RequireLowercase = false;
     options.Password.RequireUppercase = false;
@@ -27,15 +44,18 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options=>{
 }).AddEntityFrameworkStores<OneByteDbContext>();
 builder.Services.AddControllers();
 
-builder.Services.AddAuthentication(options=>{
+builder.Services.AddAuthentication(options =>
+{
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 })
-.AddJwtBearer(options=>{
+.AddJwtBearer(options =>
+{
     options.SaveToken = true;
     options.RequireHttpsMetadata = false;
-    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters{
+    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+    {
         ValidateIssuer = true,
         ValidateAudience = true,
         ValidAudience = "OneByte",
@@ -46,7 +66,7 @@ builder.Services.AddAuthentication(options=>{
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
-if(app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
