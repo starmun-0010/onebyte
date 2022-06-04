@@ -5,18 +5,17 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OneByte.Data;
 using OneByte.DomainModels;
+using OneByte.Infrastructure;
 
 namespace OneByte.Controllers
 {
     [Authorize]
     [ApiController]
     [Route("api/[controller]")]
-    public class PatientsController : Controller
+    public class PatientsController : OneByteControllerBase
     {
-        private OneByteDbContext _context;
-        public PatientsController(OneByteDbContext context)
+        public PatientsController(OneByteDbContext context) : base(context)
         {
-            _context = context;
         }
 
         [HttpGet]
