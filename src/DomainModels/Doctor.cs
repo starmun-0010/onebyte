@@ -9,6 +9,7 @@ namespace OneByte.DomainModels
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)] 
         public Guid ID { get; set; }
+        public string Name { get; set; }
         public string Contact { get; set; }
         public virtual ICollection<Patient> Patients { get; set; } 
     }
