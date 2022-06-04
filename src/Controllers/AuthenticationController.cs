@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using OneByte.Models.DTO;
+using OneByte.Contracts.RequestModels;
 
 namespace OneByte.Controllers
 {
@@ -22,7 +22,7 @@ namespace OneByte.Controllers
 
         [HttpPost]
         [Route("Register")]
-        public async Task<IActionResult> Register(UserRegisterDto userRegisterDto)
+        public async Task<IActionResult> Register(UserRequestModel userRegisterDto)
         {
             var user = new IdentityUser { UserName = userRegisterDto.Username };
             var result = await _userManager.CreateAsync(user, userRegisterDto.Password);
@@ -31,7 +31,7 @@ namespace OneByte.Controllers
 
         [HttpPost]
         [Route("Login")]
-        public async Task<IActionResult> Login(UserRegisterDto userRegisterDto)
+        public async Task<IActionResult> Login(UserRequestModel userRegisterDto)
         {
             var user = await _userManager.FindByNameAsync(userRegisterDto.Username);
             var result = await _userManager.CheckPasswordAsync(user, userRegisterDto.Password);

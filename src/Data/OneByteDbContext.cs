@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using OneByte.Models;
+using OneByte.DomainModels;
 
 namespace OneByte.Data
 {

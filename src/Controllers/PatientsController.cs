@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OneByte.Data;
-using OneByte.Models;
+using OneByte.DomainModels;
 
 namespace OneByte.Controllers
 {

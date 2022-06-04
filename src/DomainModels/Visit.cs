@@ -2,7 +2,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace OneByte.Models
+namespace OneByte.DomainModels
 {
     public class Visit 
     {
