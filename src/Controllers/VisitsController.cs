@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using OneByte.Data;
 using OneByte.DomainModels;
 using OneByte.Infrastructure;
+using OneByte.Infrastructure.Exceptions;
 
 namespace OneByte.Controllers
 {
@@ -22,7 +23,12 @@ namespace OneByte.Controllers
         [Route("{id}")]
         public async Task<IActionResult> Get(Guid id)
         {
-            return Ok(await _context.Visits.FindAsync(id));
+            var result = await _context.Visits.FindAsync(id);
+            if(result == null)
+            {
+                throw new ResourceNotFoundException(nameof(Visit), id);
+            }
+            return Ok();
         }
 
         [HttpGet]
