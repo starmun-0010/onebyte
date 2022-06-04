@@ -9,7 +9,7 @@ namespace OneByte.Infrastructure
         protected readonly OneByteDbContext _context;
         protected readonly IMapper _mapper;
 
-        public OneByteControllerBase(OneByteDbContext context, IMapper mapper=null)
+        public OneByteControllerBase(OneByteDbContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
