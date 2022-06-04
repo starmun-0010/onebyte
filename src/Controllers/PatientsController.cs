@@ -1,8 +1,10 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OneByte.Contracts.ResponseModels;
 using OneByte.Data;
 using OneByte.DomainModels;
 using OneByte.Infrastructure;
@@ -28,13 +30,15 @@ namespace OneByte.Controllers
             {
                 throw new ResourceNotFoundException(nameof(Patient), id);
             }
-            return Ok(result);
+            return Ok(_mapper.Map<PatientResponseModel>(result));
         }
 
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            return Ok(await _context.Patients.ToListAsync());
+            return Ok(await _context.Patients
+            .Select(patient =>_mapper.Map<PatientResponseModel>(patient))
+            .ToListAsync());
         }
 
         [HttpPost]
@@ -42,7 +46,7 @@ namespace OneByte.Controllers
         {
             _context.Patients.Add(patient);
             await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(Get), new { id = patient.ID }, patient);
+            return CreatedAtAction(nameof(Get), new { id = patient.ID }, _mapper.Map<PatientResponseModel>(patient));
         }
 
         [HttpPut]
@@ -50,7 +54,7 @@ namespace OneByte.Controllers
         {
             _context.Patients.Update(patient);
             await _context.SaveChangesAsync();
-            return Ok(await _context.Patients.FindAsync(patient.ID));
+            return Ok(_mapper.Map<PatientResponseModel>(await _context.Patients.FindAsync(patient.ID)));
         }
         
         [HttpDelete]

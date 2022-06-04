@@ -8,7 +8,8 @@ namespace OneByte.Infrastructure.MappingProfiles
     {
         public MappingProfiles()
         {
-            CreateMap<Doctor, DoctorResponseModel>().ReverseMap();
+            CreateMap<Doctor, DoctorResponseModel>();
+            CreateMap<Patient, PatientResponseModel>();
         }
     }
 }
