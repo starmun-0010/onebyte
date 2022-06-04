@@ -13,5 +13,8 @@ namespace OneByte.DomainModels
         [ForeignKey(nameof(Patient))]
         public Guid PatientId {get; set; }
         public Patient Patient {get; set;}
+        [ForeignKey(nameof(Doctor))]
+        public Guid DoctorId {get; set;}
+        public Doctor Doctor {get; set;}
     }
 }
