@@ -5,6 +5,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OneByte.Contracts.RequestModels.Doctor;
 using OneByte.Contracts.ResponseModels;
 using OneByte.Data;
 using OneByte.DomainModels;
@@ -43,17 +44,18 @@ namespace OneByte.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(Doctor doctor)
+        public async Task<IActionResult> Post(DoctorPostRequestModel doctorPostRequestModel)
         {
+            var doctor = _mapper.Map<Doctor>(doctorPostRequestModel);
             _context.Doctors.Add(doctor);
             await _context.SaveChangesAsync();
             return CreatedAtAction(nameof(Get), new { id = doctor.ID }, _mapper.Map<DoctorResponseModel>(doctor));
         }
 
         [HttpPut]
-        public async Task<IActionResult> Put(Doctor doctor)
+        public async Task<IActionResult> Put(DoctorPutRequestModel doctor)
         {
-            _context.Doctors.Update(doctor);
+            _context.Doctors.Update(_mapper.Map<Doctor>(doctor));
             await _context.SaveChangesAsync();
             return Ok(_mapper.Map<DoctorResponseModel>(await _context.Doctors.FindAsync(doctor.ID)));
         }
