@@ -4,6 +4,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using OneByte.Contracts.RequestModels;
 
@@ -13,10 +14,12 @@ namespace OneByte.Controllers
     [Route("api/[controller]")]
     public class AuthenticationController : Controller
     {
+        private readonly IConfiguration _configuration;
         private readonly UserManager<IdentityUser> _userManager;
 
-        public AuthenticationController(UserManager<IdentityUser> userManager)
+        public AuthenticationController(UserManager<IdentityUser> userManager, IConfiguration configuration)
         {
+            _configuration = configuration;
             _userManager = userManager;
         }
 
@@ -38,11 +41,11 @@ namespace OneByte.Controllers
             if (result)
             {
                 var token = new JwtSecurityToken(
-                    issuer: "OneByte",
-                    audience: "OneByte",
+                    issuer: _configuration["Jwt:Audience"],
+                    audience: _configuration["Jwt:Issuer"],
                     claims: new[] { new Claim(JwtRegisteredClaimNames.Sub, user.UserName) },
                     expires: DateTime.UtcNow.AddDays(7),
-                    signingCredentials: new SigningCredentials(new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes("kIoAeLFFzuJwJDGTfv4BBQg0QMQfkFH7ALBaOFrBu528ixZBb3bJ6mbRansUgoD")), SecurityAlgorithms.HmacSha256)
+                    signingCredentials: new SigningCredentials(new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_configuration["Jwt:Key"])), SecurityAlgorithms.HmacSha256)
                 );
                 return Ok(new JwtSecurityTokenHandler().WriteToken(token));
             }
