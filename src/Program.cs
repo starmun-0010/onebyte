@@ -3,6 +3,8 @@ using System.Reflection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
@@ -14,11 +16,14 @@ using Serilog.Sinks.Elasticsearch;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-builder.Host.UseSerilog((context, configuration)=>{
-    configuration.MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Information)
-    .Enrich.FromLogContext()
+var configuration = builder.Configuration;
+Console.WriteLine($"Environment: {environment}");
+Console.WriteLine($"Configuration: {configuration["ElasticSearch:Url"]}");
+builder.Host.UseSerilog((context, config)=>{
+    config.Enrich.FromLogContext()
     .Enrich.WithMachineName()
-    .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri("http://172.18.0.2:9200"))
+    .ReadFrom.Configuration(configuration)
+    .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(configuration["ElasticSearch:Url"]))
     {
         AutoRegisterTemplate = true,
         IndexFormat = $"{Assembly.GetExecutingAssembly().GetName().Name.ToLower().Replace(".", "-")}-{environment?.ToLower().Replace(".", "-")}-{DateTime.UtcNow:yyyy-MM}",
@@ -33,7 +38,10 @@ builder.Host.UseSerilog((context, configuration)=>{
     .WriteTo.Console(); 
 });
 
-builder.Services.AddDbContext<OneByteDbContext>();
+builder.Services.AddDbContext<OneByteDbContext>(options=>{
+    options.UseNpgsql(builder.Configuration.GetConnectionString("OneByteDatabase"));
+});
+
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 {
     options.Password.RequireDigit = false;
@@ -59,9 +67,9 @@ builder.Services.AddAuthentication(options =>
     {
         ValidateIssuer = true,
         ValidateAudience = true,
-        ValidAudience = "OneByte",
-        ValidIssuer = "OneByte",
-        IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes("kIoAeLFFzuJwJDGTfv4BBQg0QMQfkFH7ALBaOFrBu528ixZBb3bJ6mbRansUgoD"))
+        ValidAudience = configuration["Jwt:Audience"], 
+        ValidIssuer = configuration["Jwt:Issuer"],
+        IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(configuration["Jwt:Key"]))
     };
 });
 builder.Services.AddSwaggerGen();
