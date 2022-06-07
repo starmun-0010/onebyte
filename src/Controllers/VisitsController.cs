@@ -5,6 +5,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OneByte.Contracts.RequestModels.Visit;
 using OneByte.Contracts.ResponseModels;
 using OneByte.Data;
 using OneByte.DomainModels;
@@ -48,17 +49,18 @@ namespace OneByte.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(Visit visit)
+        public async Task<IActionResult> Post(VisitPostRequestModel visitPostRequestModel)
         {
+            var visit = _mapper.Map<Visit>(visitPostRequestModel);
             _context.Visits.Add(visit);
             await _context.SaveChangesAsync();
             return CreatedAtAction(nameof(Get), new { id = visit.ID }, _mapper.Map<VisitResponseModel>(visit));
         }
 
         [HttpPut]
-        public async Task<IActionResult> Put(Visit visit)
+        public async Task<IActionResult> Put(VisitPutRequestModel visit)
         {
-            _context.Visits.Update(visit);
+            _context.Visits.Update(_mapper.Map<Visit>(visit));
             await _context.SaveChangesAsync();
             return Ok(_mapper.Map<VisitResponseModel>(await _context.Visits.FindAsync(visit.ID)));
         }
