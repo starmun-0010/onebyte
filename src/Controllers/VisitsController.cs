@@ -53,6 +53,18 @@ namespace OneByte.Controllers
         {
             var visit = _mapper.Map<Visit>(visitPostRequestModel);
             _context.Visits.Add(visit);
+            
+            var doctor = await _context.Doctors.Include(d=>d.Patients).FirstAsync(d=>d.ID == visit.DoctorId);
+            if(doctor == null)
+            {
+                throw new ResourceNotFoundException(nameof(Doctor), visit.DoctorId);
+            }
+            var patient = await _context.Patients.FindAsync(visit.PatientId);
+            if(patient == null)
+            {
+                throw new ResourceNotFoundException(nameof(Patient), visit.PatientId);
+            }
+            doctor.Patients.Add(patient);
             await _context.SaveChangesAsync();
             return CreatedAtAction(nameof(Get), new { id = visit.ID }, _mapper.Map<VisitResponseModel>(visit));
         }
