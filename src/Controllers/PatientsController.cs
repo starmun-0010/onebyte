@@ -57,6 +57,19 @@ namespace OneByte.Controllers
             return Ok(_mapper.Map<List<DoctorResponseModel>>(doctors));
         }
 
+        [HttpGet]
+        [Route("{id}/visits")]
+        public async Task<IActionResult> GetVisits(Guid id)
+        {
+            var result = await _context.Patients.FindAsync(id);
+            if(result == null)
+            {
+                throw new ResourceNotFoundException(nameof(Patient), id);
+            }
+            var visits = await _context.Visits.Include(v=>v.Doctor).Include(v=>v.Patient).Where(v=>v.PatientId == id).ToListAsync();
+            return Ok(_mapper.Map<List<VisitResponseModel>>(visits));
+        }
+
         [HttpPost]
         public async Task<IActionResult> Post(PatientPostRequestModel patientPostRequestModel)
         {
