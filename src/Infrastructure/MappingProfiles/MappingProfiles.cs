@@ -1,4 +1,6 @@
 using AutoMapper;
+using OneByte.Contracts.RequestModels.Doctor;
+using OneByte.Contracts.RequestModels.Patient;
 using OneByte.Contracts.ResponseModels;
 using OneByte.DomainModels;
 
@@ -10,6 +12,12 @@ namespace OneByte.Infrastructure.MappingProfiles
         {
             CreateMap<Doctor, DoctorResponseModel>();
             CreateMap<Patient, PatientResponseModel>();
+
+            CreateMap<DoctorPostRequestModel, Doctor>();
+            CreateMap<DoctorPutRequestModel, Doctor>();
+            CreateMap<PatientPostRequestModel, Patient>();
+            CreateMap<PatientPutRequestModel, Patient>();
+            
         }
     }
 }
