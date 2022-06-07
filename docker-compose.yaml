@@ -9,10 +9,13 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8080:8080"
+      - "80:80"
     environment:
       ConnectionStrings__OneByteDatabase: host=postgres;port=5432;database=${POSTGRES_DB};username=${POSTGRES_USER};password=${POSTGRES_PASSWORD}
-      ElasticSearch__Url: ${ELASTICSEARCH_URL}
+      ElasticSearch__Url: ${ELASTICSEARCH_URL:?err}
+      Jwt__Key: ${JWT_KEY:?err}
+      Jwt__Audience: ${JWT_AUDIENCE:?err}
+      Jwt__Issuer: ${JWT_ISSUER:?err}
     networks:
       - onebyte
   postgres:
