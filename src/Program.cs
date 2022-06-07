@@ -1,6 +1,8 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using FluentValidation.AspNetCore;
+using MicroElements.Swashbuckle.FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -24,10 +26,15 @@ builder.Host.UseSerilog(ConfigureSerilog);
 builder.Services.AddDbContext<OneByteDbContext>(ConfigureDbContext);
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(ConfigureIdentity)
 .AddEntityFrameworkStores<OneByteDbContext>();
-builder.Services.AddControllers();
+
+builder.Services.AddControllers()
+.AddFluentValidation(config => config.RegisterValidatorsFromAssemblyContaining<Program>());
+
 builder.Services.AddAuthentication(ConfigureAuthentication)
 .AddJwtBearer(ConfigureJwtBearer);
+
 builder.Services.AddSwaggerGen();
+builder.Services.AddFluentValidationRulesToSwagger();
 
 var app = builder.Build();
 if (app.Environment.IsDevelopment())
