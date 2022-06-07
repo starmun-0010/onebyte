@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -41,6 +42,19 @@ namespace OneByte.Controllers
             return Ok(await _context.Doctors
             .Select(doctor =>_mapper.Map<DoctorResponseModel>(doctor))
             .ToListAsync());
+        }
+        
+        [HttpGet]
+        [Route("{id}/patients")]
+        public async Task<IActionResult> GetPatients(Guid id)
+        {
+            var result = await _context.Doctors.FindAsync(id);
+            if(result == null)
+            {
+                throw new ResourceNotFoundException(nameof(Doctor), id);
+            }
+            var patients = (await _context.Doctors.Include(d=>d.Patients).FirstAsync(d=> d.ID == id)).Patients;
+            return Ok(_mapper.Map<List<PatientResponseModel>>(patients));
         }
 
         [HttpPost]
