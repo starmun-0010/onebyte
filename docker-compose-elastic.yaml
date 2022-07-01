@@ -7,7 +7,7 @@ services:
       - xpack.security.enabled=false
       - "discovery.type=single-node"
     networks:
-      - es-net
+      - onebyte
     ports:
       - 9200:9200  
   kibana:
@@ -16,7 +16,7 @@ services:
     environment:
       - ELASTICSEARCH_HOSTS=http://es-container:9200
     networks:
-      - es-net
+      - onebyte
     depends_on:
       - elasticsearch
     ports:
